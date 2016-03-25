@@ -1,0 +1,22 @@
+{
+  "name": "simple-boilerplate",
+  "description": "",
+  "main": "build/index.html",
+  "authors": [
+    "kotokrad"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "html5shiv": "~3.7.3",
+    "reset-css": "^2.0.2011012603"
+  }
+}
