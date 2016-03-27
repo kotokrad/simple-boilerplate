@@ -5,7 +5,6 @@ var gulp            = require('gulp'),
     gulpFilter      = require('gulp-filter'),
     order           = require('gulp-order'),
     mainBowerFiles  = require('main-bower-files'),
-    flatten         = require('gulp-flatten'),
     sass            = require('gulp-sass'),
     rename          = require('gulp-rename'),
     csso            = require('gulp-csso'),
@@ -15,7 +14,7 @@ var gulp            = require('gulp'),
     pngquant        = require('imagemin-pngquant'),
     uglify          = require('gulp-uglify'),
     connect         = require('gulp-connect'),
-    watch           = require('gulp-watch');
+    gaze            = require('gaze');
 
 
 // Sprites
@@ -33,31 +32,32 @@ gulp.task('sprites', function() {
 
     spriteData.img.pipe(gulp.dest('./dist/images/'));
     spriteData.css.pipe(gulp.dest('./src/sass/'))
+        .pipe(connect.reload());
 });
 
 // Styles
 // ===========================================
 gulp.task('styles', function () {
-  gulp.src('./src/sass/screen.sass')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(autoprefixer({
-        browsers: [
-            'last 2 versions',
-            'firefox >= 4',
-            'safari 7',
-            'safari 8',
-            'IE 8',
-            'IE 9',
-            'IE 10',
-            'IE 11'
-        ],
-        cascade: false
-    }))
-    .pipe(gulp.dest('./dist/css/'))
-    .pipe(csso())
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('./dist/css/'))
-    .pipe(connect.reload());
+    gulp.src('./src/sass/screen.sass')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoprefixer({
+            browsers: [
+                'last 2 versions',
+                'firefox >= 4',
+                'safari 7',
+                'safari 8',
+                'IE 8',
+                'IE 9',
+                'IE 10',
+                'IE 11'
+            ],
+            cascade: false
+        }))
+        .pipe(gulp.dest('./dist/css/'))
+        .pipe(csso())
+        .pipe(rename({suffix: '.min'}))
+        .pipe(gulp.dest('./dist/css/'))
+        .pipe(connect.reload());
 });
 
 // Images
@@ -86,16 +86,25 @@ gulp.task('scripts', function() {
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('./dist/js/'))
+        .pipe(connect.reload());
 });
 
 // HTML
 // ===========================================
 gulp.task('html', function () {
-    gulp.src('./dist/*.html')
-    //TODO use jade
+    gulp.src('./src/html/*.html')
+        .pipe(gulp.dest('./dist/'))
         .pipe(connect.reload());
+        // TODO use jade
 });
 
+// Fonts
+// ===========================================
+gulp.task('fonts', function () {
+    gulp.src('./src/fonts/*.*')
+        .pipe(gulp.dest('./dist/fonts/'))
+        .pipe(connect.reload());
+});
 
 // Bower libs
 // ===========================================
@@ -120,19 +129,18 @@ gulp.task('libs', function () {
         '**/*.js'
         ]))
     .pipe(concat('vendors.js'))
-    .pipe(gulp.dest('src/js/'))
+    .pipe(gulp.dest('./src/js/'))
     .pipe(connect.reload())
     .pipe(jsFilter.restore)
     // CSS filter
     .pipe(cssFilter)
     .pipe(concat('_libs.scss'))
-    .pipe(gulp.dest('src/sass/'))
+    .pipe(gulp.dest('./src/sass/'))
     .pipe(connect.reload())
     .pipe(cssFilter.restore)
     // Fonts filter
     .pipe(fontFilter)
-    .pipe(flatten())
-    .pipe(gulp.dest('dist/fonts/'))
+    .pipe(gulp.dest('./dist/fonts/'))
     .pipe(connect.reload());
 });
 
@@ -146,38 +154,63 @@ gulp.task('connect', function() {
     });
 });
 
+// Watch
+// ===========================================
+gulp.task('watch', function() {
+    // Bower
+    gaze('bower.json', function() {
+        this.on('all', function() {
+            gulp.start('libs');
+        });
+    });
+    // Styles
+    gaze('./src/sass/**/*.{sass,scss}', function() {
+        this.on('all', function() {
+            gulp.start('styles');
+        });
+    });
+    // HTML
+    gaze('./src/html/*.html', function() {
+        this.on('all', function() {
+            gulp.start('html');
+        });
+    });
+    // Fonts
+    gaze('./src/fonts/*.*', function() {
+        this.on('all', function() {
+            gulp.start('fonts');
+        });
+    });
+    // Scripts
+    gaze('./src/js/*.js', function() {
+        this.on('all', function() {
+            gulp.start('scripts');
+        });
+    });
+    // Sprites
+    gaze('./src/images/icons/**/*.png', function() {
+        this.on('all', function() {
+            gulp.start('sprites');
+        });
+    });
+    // Images
+    gaze(['./src/images/**/*.{png,jpg}', '!./src/images/{icons,icons/**}'], function() {
+        this.on('all', function() {
+            gulp.start('images');
+        });
+    });
+});
+
 // Default
 // ===========================================
 gulp.task('default', function() {
     gulp.start('connect');
-    // Bower
-    gulp.src('bower.json')
-        .pipe(watch('bower.json', function() {
-            gulp.start('libs');
-        }));
-    // Styles
-    gulp.src('./src/sass/**/*.{sass,scss}')
-        .pipe(watch('./src/sass/**/*.{sass,scss}', function() {
-            gulp.start('styles');
-        }));
-    // HTML
-    gulp.src('./dist/*.html')
-        .pipe(watch('./dist/*.html', function() {
-            gulp.start('html');
-        }));
-    // Scripts
-    gulp.src('./src/js/*.js')
-        .pipe(watch('./src/js/*.js', function() {
-            gulp.start('scripts');
-        }));
-    // Sprites
-    gulp.src('./src/images/icons/**/*.png')
-        .pipe(watch('./src/images/icons/**/*.png', function() {
-            gulp.start('sprites');
-        }));
-    // Images
-    gulp.src(['./src/images/**/*.{png,jpg}', '!./src/images/{icons,icons/**}'])
-        .pipe(watch(['./src/images/**/*.{png,jpg}', '!./src/images/{icons,icons/**}'], function() {
-            gulp.start('images');
-        }));
-})
+    gulp.start('images');
+    gulp.start('libs');
+    gulp.start('styles');
+    gulp.start('html');
+    gulp.start('fonts');
+    gulp.start('scripts');
+    gulp.start('sprites');
+    gulp.start('watch');
+});
