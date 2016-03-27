@@ -2,7 +2,7 @@
 user="kotokrad"
 
 if [ -z "$1" ]; then
-	files="."
+	files="-A"
 else
 	files="$@"
 fi
