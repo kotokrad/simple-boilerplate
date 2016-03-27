@@ -1,7 +1,7 @@
 {
   "name": "simple-boilerplate",
   "description": "",
-  "main": "build/index.html",
+  "main": "dist/index.html",
   "authors": [
     "kotokrad"
   ],
