@@ -28,6 +28,7 @@ gulp.task('sprites', function() {
                 imgPath: '../images/sprite.png',
                 cssName: '_sprite.sass',
                 cssFormat: 'sass',
+                cssTemplate: 'sprites.handlebars',
                 algorithm: 'binary-tree'
             }));
 
