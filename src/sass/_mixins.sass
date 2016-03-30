@@ -4,3 +4,15 @@
         display: table
         clear: both
         height: 0
+
+// px to em function
+$browser-context: 16; // Default
+@function em($pixels, $context: $browser-context)
+    @return #{$pixels/$context}em
+
+@function pc($pixels, $context)
+    @return percentage($pixels/$context)
+
+// TODO
+// is it function in the mixins file?
+// Should find a better way
