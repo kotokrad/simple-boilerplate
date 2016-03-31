@@ -10,6 +10,7 @@ else
 fi
 
 git init
+printf "\ngit-deploy.sh\ngit-init.sh" >> .gitignore
 git add .
 git commit -m "initial commit"
 git remote add origin "$url"
