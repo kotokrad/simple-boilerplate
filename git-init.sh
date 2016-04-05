@@ -26,7 +26,7 @@ else
 	url="git@github.com:$user/$repo.git"
 fi
 
-curl -sS -u "$user" -d '{"name": "$repo"}' https://api.github.com/user/repos > /dev/null
+curl -sS -u "$user" -d "{\"name\": \"$repo\"}" https://api.github.com/user/repos > /dev/null
 git init
 printf "\ngit-deploy.sh\ngit-init.sh" >> .gitignore
 git add .
