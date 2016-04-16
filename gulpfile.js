@@ -14,7 +14,8 @@ var gulp            = require('gulp'),
     pngquant        = require('imagemin-pngquant'),
     uglify          = require('gulp-uglify'),
     connect         = require('gulp-connect'),
-    gaze            = require('gaze');
+    gaze            = require('gaze'),
+    jade            = require('gulp-jade');
     // debug           = require('gulp-debug');
 
 
@@ -89,10 +90,14 @@ gulp.task('scripts', function() {
 // HTML
 // ===========================================
 gulp.task('html', function () {
-    gulp.src('src/html/*.html')
+    gulp.src('src/jade/*.jade')
+    // gulp.src('src/html/*.html')
+        .pipe(jade({
+            pretty: true
+        }))
+        // .pipe(gulp.dest('src/html/'))
         .pipe(gulp.dest('dist/'))
         .pipe(connect.reload());
-        // TODO use jade
 });
 
 // Fonts
@@ -167,7 +172,7 @@ gulp.task('watch', function() {
         });
     });
     // HTML
-    gaze(['src/html/**' ,'src/html/*.html'], function() {
+    gaze(['src/jade/**' ,'src/jade/*.html'], function() {
         this.on('all', function() {
             gulp.start('html');
         });
