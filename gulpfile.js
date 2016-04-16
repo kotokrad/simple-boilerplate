@@ -112,24 +112,12 @@ gulp.task('fonts', function () {
 // ===========================================
 gulp.task('libs', function () {
     var vendors = mainBowerFiles();
-    var shivFilter = gulpFilter('html5shiv.js', {restore: true});
-    var jsFilter = gulpFilter(['*.js', '!html5shiv.js'], {restore: true});
-    var cssFilter = gulpFilter(['*.css', 'normalize.css'], {restore: true});
+    var jsFilter = gulpFilter(['*.js'], {restore: true});
+    var cssFilter = gulpFilter(['*.css'], {restore: true});
     var fontFilter = gulpFilter(['*.eot', '*.woff', '*.svg', '*.ttf']);
     return gulp.src(vendors)
-    // HTML5Shiv
-    .pipe(shivFilter)
-    .pipe(uglify())
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('dist/js/'))
-    .pipe(connect.reload())
-    .pipe(shivFilter.restore)
     // JS filter
     .pipe(jsFilter)
-    .pipe(order([
-        'jquery.js',
-        '**/*.js'
-        ]))
     .pipe(concat('vendors.js'))
     .pipe(gulp.dest('src/js/'))
     .pipe(connect.reload())
