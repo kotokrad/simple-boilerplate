@@ -18,6 +18,7 @@ if [[ "$user" = "%default%" ]] || [[ "$1" = "-changeuser" ]]; then
 	fi
 fi
 
+sed -i -e "s/simple-boilerplate/$repo/" "package.json"
 printf "%s\n" "${gitignore[@]}" > .gitignore
 
 if [[ "$https" = true ]]; then
